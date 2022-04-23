@@ -28,7 +28,6 @@ public class CommandManager {
                           AbstractClientCommand executeScriptCommand,
                           AbstractServerCommand helpServerCommand,
                           AbstractServerCommand exitServerCommand,
-                          AbstractServerCommand saveServerCommand,
                           AbstractServerCommand historyServerCommand) {
 
         ServerConfig.getClientAvailableCommands().put(helpClientCommand.getName(), helpClientCommand);
@@ -49,7 +48,6 @@ public class CommandManager {
 
         ServerConfig.getServerAvailableCommands().put(helpServerCommand.getName(), helpServerCommand);
         ServerConfig.getServerAvailableCommands().put(exitServerCommand.getName(), exitServerCommand);
-        ServerConfig.getServerAvailableCommands().put(saveServerCommand.getName(), saveServerCommand);
         ServerConfig.getServerAvailableCommands().put(historyServerCommand.getName(), historyServerCommand);
     }
 

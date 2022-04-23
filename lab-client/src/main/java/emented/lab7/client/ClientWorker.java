@@ -1,14 +1,9 @@
 package emented.lab7.client;
 
-import emented.lab7.client.util.AvailableCommands;
 import emented.lab7.client.util.ClientSocketWorker;
-import emented.lab7.client.util.CommandToSend;
-import emented.lab7.client.util.CommandValidators;
-import emented.lab7.client.util.RequestCreator;
-import emented.lab7.client.util.ScriptReader;
-import emented.lab7.client.workWithCommandLine.ClientCommandListener;
-import emented.lab7.common.exceptions.WrongAmountOfArgsException;
+import emented.lab7.client.util.Session;
 import emented.lab7.common.util.Request;
+import emented.lab7.common.util.RequestType;
 import emented.lab7.common.util.Response;
 import emented.lab7.common.util.TextColoring;
 
@@ -16,69 +11,170 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class ClientWorker {
     private final Scanner scanner = new Scanner(System.in);
-    private final ClientCommandListener commandListener = new ClientCommandListener(System.in);
-    private final RequestCreator requestCreator = new RequestCreator();
     private final int maxPort = 65535;
+    private final int logAndPasMinLen = 5;
     private ClientSocketWorker clientSocketWorker;
-    private boolean statusOfCommandListening = true;
 
     public void startClientWorker() {
         ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Welcome to the program! To see the list of commands type HELP"));
         inputAddress();
         inputPort();
-        while (statusOfCommandListening) {
-            CommandToSend command = commandListener.readCommand();
-            if (command != null) {
-                if ("exit".equals(command.getCommandName().toLowerCase(Locale.ROOT))) {
-                    ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Client shutdown"));
-                    toggleStatus();
-                } else if (AvailableCommands.SCRIPT_ARGUMENT_COMMAND.equals(command.getCommandName())) {
-                    executeScript(command.getCommandArgs());
+        List<String> user;
+        if (askForRegistration()) {
+            user = registerUser();
+        } else {
+            user = loginUser();
+        }
+        Session session = new Session(user, clientSocketWorker);
+        session.startSession();
+    }
+
+    private boolean askForRegistration() {
+        ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Do you have an account? [y/n]"));
+        while (true) {
+            try {
+                String s = scanner.nextLine().trim().toLowerCase(Locale.ROOT);
+                if ("y".equals(s)) {
+                    return false;
+                } else if ("n".equals(s)) {
+                    return true;
                 } else {
-                    if (sendRequest(command)) {
-                        receiveResponse();
-                    }
+                    ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("You entered not valid symbol, try again"));
                 }
+            } catch (NoSuchElementException e) {
+                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("An invalid character has been entered, forced shutdown!"));
+                System.exit(1);
             }
         }
     }
 
-    public void toggleStatus() {
-        statusOfCommandListening = !statusOfCommandListening;
+    private List<String> registerUser() {
+        ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Welcome to the registration tab!"));
+        String login;
+        String password;
+        while (true) {
+            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Enter the username that you will"
+                    + " use to work with the application (it should contain at least 5 symbols)"));
+            while (true) {
+                login = scanner.nextLine().trim();
+                if (login.length() < logAndPasMinLen) {
+                    ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("Login is too small, try again"));
+                    continue;
+                }
+                break;
+            }
+            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Enter the password that you will"
+                    + " use to work with the application (it should contain at least 5 symbols)"));
+            while (true) {
+                password = scanner.nextLine().trim();
+                if (password.length() < logAndPasMinLen) {
+                    ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("Password is too small, try again"));
+                    continue;
+                }
+                break;
+            }
+            try {
+                clientSocketWorker.sendRequest(new Request(login, password, RequestType.REGISTER));
+                List<String> listToReturn = receiveUsersResponse(login, password);
+                if (listToReturn != null) {
+                    return listToReturn;
+                }
+            } catch (SocketTimeoutException e) {
+                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("The waiting time for a response from the server has been exceeded, try again later"));
+            } catch (IOException e) {
+                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("An error occurred while serializing the request, try again"));
+            } catch (ClassNotFoundException e) {
+                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("The response came damaged"));
+            }
+        }
+    }
+
+    private List<String> loginUser() {
+        ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Welcome to the registration tab!"));
+        String login;
+        String password;
+        while (true) {
+            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Enter your login"
+                    + " (it should contain at least 5 symbols)"));
+            while (true) {
+                login = scanner.nextLine().trim();
+                if (login.length() < logAndPasMinLen) {
+                    ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("Login is too small, try again"));
+                    continue;
+                }
+                break;
+            }
+            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Enter your password"
+                    + " (it should contain at least 5 symbols)"));
+            while (true) {
+                password = scanner.nextLine().trim();
+                if (password.length() < logAndPasMinLen) {
+                    ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("Password is too small, try again"));
+                    continue;
+                }
+                break;
+            }
+            try {
+                clientSocketWorker.sendRequest(new Request(login, password, RequestType.LOGIN));
+                List<String> listToReturn = receiveUsersResponse(login, password);
+                if (listToReturn != null) {
+                    return listToReturn;
+                }
+            } catch (SocketTimeoutException e) {
+                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("The waiting time for a response from the server has been exceeded, try again later"));
+            } catch (IOException e) {
+                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("An error occurred while serializing the request, try again"));
+            } catch (ClassNotFoundException e) {
+                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("The response came damaged"));
+            }
+        }
+    }
+
+    private List<String> receiveUsersResponse(String login, String password) throws ClassNotFoundException, IOException {
+        Response response = clientSocketWorker.receiveResponse();
+        ClientConfig.getConsoleTextPrinter().printlnText(response.getMessageToResponse());
+        if (response.isSuccess()) {
+            List<String> listToReturn = new ArrayList<>();
+            listToReturn.add(login);
+            listToReturn.add(password);
+            return listToReturn;
+        }
+        return null;
     }
 
     private void inputAddress() {
         ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Do you want to use a default server address? [y/n]"));
-        try {
-            String s = scanner.nextLine().trim().toLowerCase(Locale.ROOT);
-            if ("y".equals(s)) {
-                clientSocketWorker = new ClientSocketWorker();
-            } else if ("n".equals(s)) {
-                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Please enter the server's internet address"));
-                String address = scanner.nextLine();
-                clientSocketWorker = new ClientSocketWorker();
-                clientSocketWorker.setAddress(address);
-            } else {
-                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("You entered not valid symbol, try again"));
-                inputAddress();
+        while (true) {
+            try {
+                String s = scanner.nextLine().trim().toLowerCase(Locale.ROOT);
+                if ("y".equals(s)) {
+                    clientSocketWorker = new ClientSocketWorker();
+                    break;
+                } else if ("n".equals(s)) {
+                    ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Please enter the server's internet address"));
+                    String address = scanner.nextLine();
+                    clientSocketWorker = new ClientSocketWorker();
+                    clientSocketWorker.setAddress(address);
+                    break;
+                } else {
+                    ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("You entered not valid symbol, try again"));
+                }
+            } catch (UnknownHostException e) {
+                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("Unknown address, try again"));
+            } catch (SocketException e) {
+                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("Troubles, while opening server port, try again"));
+            } catch (NoSuchElementException e) {
+                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("An invalid character has been entered, forced shutdown!"));
+                System.exit(1);
             }
-        } catch (UnknownHostException e) {
-            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("Unknown address, try again"));
-            inputAddress();
-        } catch (SocketException e) {
-            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("Troubles, while opening server port, try again"));
-            inputAddress();
-        } catch (NoSuchElementException e) {
-            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("An invalid character has been entered, forced shutdown!"));
-            System.exit(1);
         }
     }
 
@@ -110,67 +206,4 @@ public class ClientWorker {
             System.exit(1);
         }
     }
-
-    private boolean sendRequest(CommandToSend command) {
-        Request request = requestCreator.createRequestOfCommand(command);
-        if (request != null) {
-            request.setCurrentTime(LocalTime.now());
-            request.setClientInfo(clientSocketWorker.getAddress() + " " + clientSocketWorker.getPort());
-            try {
-                clientSocketWorker.sendRequest(request);
-                return true;
-            } catch (IOException e) {
-                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("An error occurred while serializing the request, try again"));
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    private void receiveResponse() {
-        try {
-            Response response = clientSocketWorker.receiveResponse();
-            ClientConfig.getConsoleTextPrinter().printlnText(response.toString());
-        } catch (SocketTimeoutException e) {
-            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("The waiting time for a response from the server has been exceeded, try again later"));
-        } catch (IOException e) {
-            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("An error occurred while receiving a response from the server"));
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("The response came damaged"));
-        }
-    }
-
-    private void executeScript(String[] args) {
-        try {
-            CommandValidators.validateAmountOfArgs(args, 1);
-            ScriptReader reader = new ScriptReader();
-
-            if (ClientConfig.getHistoryOfScripts().contains(args[0])) {
-                ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("Possible looping, change your script"));
-            } else {
-                reader.readCommandsFromFile(args[0]);
-                ClientConfig.getHistoryOfScripts().add(args[0]);
-                ArrayList<CommandToSend> commands = reader.getCommandsFromFile();
-                for (CommandToSend command : commands) {
-                    ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getBlueText("Executing... " + command.getCommandName()));
-                    if ("execute_script".equals(command.getCommandName())) {
-                        executeScript(command.getCommandArgs());
-                    } else {
-                        if (sendRequest(command)) {
-                            receiveResponse();
-                            ClientConfig.getHistoryOfScripts().remove(command.getCommandName());
-                        }
-                    }
-                }
-            }
-        } catch (WrongAmountOfArgsException | IOException e) {
-            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText(e.getMessage()));
-        } catch (NoSuchElementException e) {
-            ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("An invalid character has been entered, forced shutdown!"));
-            System.exit(1);
-        }
-    }
-
 }

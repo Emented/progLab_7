@@ -5,11 +5,15 @@ import emented.lab7.client.workWithCommandLine.MusicBandGenerator;
 import emented.lab7.common.exceptions.WrongAmountOfArgsException;
 import emented.lab7.common.exceptions.WrongArgException;
 import emented.lab7.common.util.Request;
+import emented.lab7.common.util.RequestType;
 import emented.lab7.common.util.TextColoring;
 
-public class RequestCreator {
+public final class RequestCreator {
 
-    public Request createRequestOfCommand(CommandToSend command) {
+    private RequestCreator() {
+    }
+
+    public static Request createRequestOfCommand(CommandToSend command) {
         String name = command.getCommandName();
         Request request;
         if (AvailableCommands.COMMANDS_WITHOUT_ARGS.contains(name)) {
@@ -26,27 +30,28 @@ public class RequestCreator {
             ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("There is no such command, type HELP to get list on commands"));
             request = null;
         }
+
         return request;
     }
 
-    private Request createRequestWithoutArgs(CommandToSend command) {
+    private static Request createRequestWithoutArgs(CommandToSend command) {
         try {
             CommandValidators.validateAmountOfArgs(command.getCommandArgs(), 0);
-            return new Request(command.getCommandName());
+            return new Request(command.getCommandName(), RequestType.COMMAND);
         } catch (WrongAmountOfArgsException e) {
             ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText(e.getMessage()));
             return null;
         }
     }
 
-    private Request createRequestWithID(CommandToSend command) {
+    private static Request createRequestWithID(CommandToSend command) {
         try {
             CommandValidators.validateAmountOfArgs(command.getCommandArgs(), 1);
             long id = CommandValidators.validateArg(arg -> ((long) arg) > 0,
                     "ID must be greater then 0",
                     Long::parseLong,
                     command.getCommandArgs()[0]);
-            return new Request(command.getCommandName(), id);
+            return new Request(command.getCommandName(), id, RequestType.COMMAND);
         } catch (WrongAmountOfArgsException | WrongArgException e) {
             ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText(e.getMessage()));
             return null;
@@ -56,14 +61,14 @@ public class RequestCreator {
         }
     }
 
-    private Request createRequestWithNumOfParticipants(CommandToSend command) {
+    private static Request createRequestWithNumOfParticipants(CommandToSend command) {
         try {
             CommandValidators.validateAmountOfArgs(command.getCommandArgs(), 1);
             long numberOfParticipants = CommandValidators.validateArg(arg -> ((long) arg) > 0,
                     "Number of participants must be greater then 0",
                     Long::parseLong,
                     command.getCommandArgs()[0]);
-            return new Request(command.getCommandName(), numberOfParticipants);
+            return new Request(command.getCommandName(), numberOfParticipants, RequestType.COMMAND);
         } catch (WrongAmountOfArgsException | WrongArgException e) {
             ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText(e.getMessage()));
             return null;
@@ -73,19 +78,19 @@ public class RequestCreator {
         }
     }
 
-    private Request createRequestWithBand(CommandToSend command) {
+    private static Request createRequestWithBand(CommandToSend command) {
         try {
             CommandValidators.validateAmountOfArgs(command.getCommandArgs(), 0);
             MusicBandGenerator generator = new MusicBandGenerator();
             generator.setVariables();
-            return new Request(command.getCommandName(), generator.getGeneratedMusicBand());
+            return new Request(command.getCommandName(), generator.getGeneratedMusicBand(), RequestType.COMMAND);
         } catch (WrongAmountOfArgsException e) {
             ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText(e.getMessage()));
             return null;
         }
     }
 
-    private Request createRequestWithBandID(CommandToSend command) {
+    private static Request createRequestWithBandID(CommandToSend command) {
         try {
             CommandValidators.validateAmountOfArgs(command.getCommandArgs(), 1);
             long id = CommandValidators.validateArg(arg -> ((long) arg) > 0,
@@ -94,7 +99,7 @@ public class RequestCreator {
                     command.getCommandArgs()[0]);
             MusicBandGenerator generator = new MusicBandGenerator();
             generator.setVariables();
-            return new Request(command.getCommandName(), id, generator.getGeneratedMusicBand());
+            return new Request(command.getCommandName(), id, generator.getGeneratedMusicBand(), RequestType.COMMAND);
         } catch (WrongAmountOfArgsException | WrongArgException e) {
             ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText(e.getMessage()));
             return null;

@@ -1,7 +1,5 @@
 package emented.lab7.common.entities;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -9,13 +7,9 @@ import java.io.Serializable;
  */
 public class Studio implements Serializable, Comparable<Studio> {
 
-    private static final int MAX_ADDRESS_LENGTH = 100;
-
     /**
      * Поле, хранящее адрес студии (не может быть null)
      */
-    @NotBlank(message = "The address must contain at least 1 character")
-    @Size(min = 1, max = MAX_ADDRESS_LENGTH, message = "Address is too long")
     private String address; //Поле не может быть null
 
     public Studio(String adress) {

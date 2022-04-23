@@ -1,11 +1,7 @@
 package emented.lab7.server.util;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import emented.lab7.common.entities.MusicBand;
 import emented.lab7.common.exceptions.CollectionIsEmptyException;
-import emented.lab7.common.exceptions.GroupNotFoundException;
-import emented.lab7.common.exceptions.GroupNotMaxException;
 import emented.lab7.common.exceptions.IDNotFoundException;
 
 import java.time.LocalDate;
@@ -14,22 +10,12 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Класс, хранящий в себе коллекцию музыкальных групп, а так же реализующий методы работы с ней
  */
-@XStreamAlias("set")
 public class CollectionManager {
-
-    private static long idCounter = 1;
-
-    /**
-     * Поле, хранящее имя файла
-     */
-    private static String fileName;
-
     /**
      * Поле, хранящее дату инициализации
      */
@@ -38,27 +24,10 @@ public class CollectionManager {
     /**
      * Поле, хранящее коллекцию элементов
      */
-    @XStreamImplicit
     private HashSet<MusicBand> musicBands;
 
     public CollectionManager() {
         dateOfInitialization = LocalDate.now();
-    }
-
-    /**
-     * Конструктор класса
-     *
-     * @param fileName Имя файла
-     */
-    public CollectionManager(String fileName) {
-        dateOfInitialization = LocalDate.now();
-        this.fileName = fileName;
-    }
-
-    public void reassignIds() {
-        for (MusicBand m : musicBands) {
-            m.setId(idCounter++);
-        }
     }
 
     /**
@@ -80,30 +49,11 @@ public class CollectionManager {
     }
 
     /**
-     * Метод, возвращающий имя файла коллекции
-     *
-     * @return Имя файла
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * Метод, устанавливающий имя файла
-     *
-     * @param fileName Новое имя файла
-     */
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    /**
      * Метод, добавлющий в коллекцию новый элемент
      *
      * @param band Новый элемент для добавления
      */
     public void addMusicBand(MusicBand band) {
-        band.setId(idCounter++);
         musicBands.add(band);
     }
 
@@ -116,15 +66,17 @@ public class CollectionManager {
         return musicBands;
     }
 
+    public void setMusicBands(HashSet<MusicBand> musicBands) {
+        this.musicBands = musicBands;
+    }
+
     /**
      * Метод, удаляющий группу по ID
      *
      * @param id ID группы для удаления
      */
-    public void removeBandById(Long id) throws IDNotFoundException {
-        if (!musicBands.removeIf(mb -> Objects.equals(mb.getId(), id))) {
-            throw new IDNotFoundException("There is no group with this ID");
-        }
+    public void removeBandById(Long id) {
+        musicBands.removeIf(mb -> Objects.equals(mb.getId(), id));
     }
 
     /**
@@ -133,13 +85,10 @@ public class CollectionManager {
      * @param id        ID существующего элемента
      * @param musicBand Новый элемент коллекции
      */
-    public void updateById(Long id, MusicBand musicBand) throws IDNotFoundException {
-        if (musicBands.removeIf(mb -> Objects.equals(mb.getId(), id))) {
-            musicBand.setId(id);
-            musicBands.add(musicBand);
-        } else {
-            throw new IDNotFoundException("There is no group with this ID");
-        }
+    public void updateById(Long id, MusicBand musicBand) {
+        musicBands.removeIf(mb -> Objects.equals(mb.getId(), id));
+        musicBand.setId(id);
+        musicBands.add(musicBand);
     }
 
     public void checkId(Long id) throws IDNotFoundException {
@@ -155,53 +104,32 @@ public class CollectionManager {
         }
     }
 
-    /**
-     * Метод, добавляющий новый элемент в коллекцию, если он больше всех существующих
-     *
-     * @param musicBand Новый элемент
-     */
-    public void addIfMax(MusicBand musicBand) throws GroupNotMaxException {
+    public boolean checkMax(MusicBand musicBand) {
+        boolean check = true;
         for (MusicBand band : musicBands) {
             if (band.compareTo(musicBand) >= 0) {
-                throw new GroupNotMaxException("The entered music group is not maximal");
+                check = false;
+                break;
             }
         }
-        addMusicBand(musicBand);
+        return check;
     }
 
-    /**
-     * Метод, удаляющий все элементы коллекции, большие данной
-     *
-     * @param musicBand Элемент для сравнения
-     */
-    public Set<MusicBand> removeIfGreater(MusicBand musicBand) throws CollectionIsEmptyException {
-        Set<MusicBand> copy = new HashSet<>(musicBands);
-        if (!musicBands.isEmpty()) {
-            musicBands.removeIf(mb -> mb.compareTo(musicBand) > 0);
-            copy.removeAll(musicBands);
-        } else {
-            throw new CollectionIsEmptyException("Collection is empty");
-        }
-        return copy;
-    }
-
-    /**
-     * Метод, удаляющий из коллекции элемент с эквивалентным заданному числом участников
-     *
-     * @param numberOfParticipants Число участников для сравнения
-     */
-    public MusicBand removeAnyByNumberOfParticipants(Long numberOfParticipants) throws GroupNotFoundException, CollectionIsEmptyException {
-        if (!musicBands.isEmpty()) {
-            List<MusicBand> matchBands = musicBands.stream().filter(mb -> Objects.equals(mb.getNumberOfParticipants(), numberOfParticipants)).collect(Collectors.toList());
-            if (matchBands.isEmpty()) {
-                throw new GroupNotFoundException("There is no group with this number of participants");
-            } else {
-                musicBands.remove(matchBands.get(0));
-                return matchBands.get(0);
+    public List<Long> returnIDsOfGreater(MusicBand musicBand) {
+        List<Long> ids = new ArrayList<>();
+        for (MusicBand mb : musicBands) {
+            if (mb.compareTo(musicBand) > 0) {
+                ids.add(mb.getId());
             }
-        } else {
-            throw new CollectionIsEmptyException("Collection is empty");
         }
+        return ids;
+    }
+
+    public List<Long> returnIDbyNumberOFParticipants(Long numberOfParticipants) {
+        return musicBands.stream()
+                .filter(mb -> Objects.equals(mb.getNumberOfParticipants(), numberOfParticipants))
+                .map(MusicBand::getId)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -252,7 +180,7 @@ public class CollectionManager {
         final int size = 6;
         return "Collection type: " + musicBands.getClass().toString().substring(size) + ", type of elements: "
                 + MusicBand.class.toString().substring(size) + ", date of initialization: " + dateOfInitialization
-                + ", number of elements: " + musicBands.size() + ", file of collection: " + fileName;
+                + ", number of elements: " + musicBands.size();
     }
 
     /**

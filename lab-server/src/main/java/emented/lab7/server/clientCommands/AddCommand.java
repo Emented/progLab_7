@@ -2,22 +2,22 @@ package emented.lab7.server.clientCommands;
 
 import emented.lab7.common.util.Request;
 import emented.lab7.common.util.Response;
-import emented.lab7.common.util.TextColoring;
 import emented.lab7.server.abstractions.AbstractClientCommand;
-import emented.lab7.server.util.CollectionManager;
+import emented.lab7.server.util.CommandProcessor;
 
 public class AddCommand extends AbstractClientCommand {
 
-    private final CollectionManager collectionInWork;
+    private final CommandProcessor commandProcessor;
 
-    public AddCommand(CollectionManager collectionInWork) {
-        super("add", 0, "add a new item to the collection");
-        this.collectionInWork = collectionInWork;
+    public AddCommand(CommandProcessor commandProcessor) {
+        super("add",
+                0,
+                "add a new item to the collection");
+        this.commandProcessor = commandProcessor;
     }
 
     @Override
     public Response executeClientCommand(Request request) {
-        collectionInWork.addMusicBand(request.getBandArgument());
-        return new Response(TextColoring.getGreenText("New element was successfully added!"), request.getBandArgument());
+        return commandProcessor.add(request);
     }
 }

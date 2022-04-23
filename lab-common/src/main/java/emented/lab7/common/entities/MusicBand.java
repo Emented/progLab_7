@@ -1,34 +1,18 @@
 package emented.lab7.common.entities;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 import emented.lab7.common.entities.enums.MusicGenre;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 
-@XStreamAlias("musicband")
 public class MusicBand implements Serializable, Comparable<MusicBand> {
 
-    private static final int MAX_NAME_LENGTH = 100;
-    private static final int MAX_DESCRIPTION_LENGTH = 300;
-
-    @NotNull
-    @PastOrPresent(message = "The collection cannot have a creation date in the future time")
     private final LocalDate creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
-    @NotNull
-    @Positive(message = "The id must be greater then 0")
     private Long id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
-    @Size(min = 1, max = MAX_NAME_LENGTH, message = "Name is too long")
     private String name; //Поле не может быть null, Строка не может быть пустой
-    @NotNull
     private Coordinates coordinates; //Поле не может быть null
-    @Positive(message = "The number of participants must be greater than 0")
     private long numberOfParticipants; //Значение поля должно быть больше 0
-    @Size(max = MAX_DESCRIPTION_LENGTH, message = "Description is too long")
     private String description; //Поле может быть null
     private MusicGenre genre; //Поле может быть null
     private Studio studio; //Поле может быть null
@@ -43,6 +27,17 @@ public class MusicBand implements Serializable, Comparable<MusicBand> {
     public MusicBand(Long id) {
         this.id = id;
         creationDate = LocalDate.now();
+    }
+
+    public MusicBand(LocalDate creationDate, Long id, String name, Coordinates coordinates, long numberOfParticipants, String description, MusicGenre genre, Studio studio) {
+        this.creationDate = creationDate;
+        this.id = id;
+        this.name = name;
+        this.coordinates = coordinates;
+        this.numberOfParticipants = numberOfParticipants;
+        this.description = description;
+        this.genre = genre;
+        this.studio = studio;
     }
 
     /**
@@ -61,6 +56,14 @@ public class MusicBand implements Serializable, Comparable<MusicBand> {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public String getName() {
+        return name;
     }
 
     /**
@@ -108,6 +111,10 @@ public class MusicBand implements Serializable, Comparable<MusicBand> {
         this.numberOfParticipants = numberOfParticipants;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     /**
      * Метод, устанавливающий описание
      *
@@ -115,6 +122,10 @@ public class MusicBand implements Serializable, Comparable<MusicBand> {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public MusicGenre getGenre() {
+        return genre;
     }
 
     /**

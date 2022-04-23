@@ -23,15 +23,17 @@ public class Coordinates implements Serializable {
     /**
      * Поле, хранящее в себе координату по X
      */
-    @Max(value = MAX_X, message = "The X coordinate must be less than 947")
     private double x; //Максимальное значение поля: 947
 
     /**
      * Поле, хранящее в себе координату по Y
      */
-    @NotNull(message = "The Y coordinate cannot be null")
-    @Max(value = MAX_Y, message = "The Y coordinate must be less than 104")
     private Float y; //Максимальное значение поля: 104, Поле не может быть null
+
+    public Coordinates(double x, Float y) {
+        this.x = x;
+        this.y = y;
+    }
 
     /**
      * Метод, возвращающий координату по X

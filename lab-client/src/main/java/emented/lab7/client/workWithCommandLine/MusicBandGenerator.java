@@ -24,10 +24,6 @@ public class MusicBandGenerator {
      */
     private final MusicBand generatedMusicBand;
 
-    /**
-     * Координаты новой музыкальной группы
-     */
-    private final Coordinates coordinates = new Coordinates();
 
     /**
      * Сканер для считывания в интерактином режиме
@@ -39,7 +35,6 @@ public class MusicBandGenerator {
      */
     public MusicBandGenerator() {
         generatedMusicBand = new MusicBand();
-        generatedMusicBand.setCoordinates(coordinates);
     }
 
     /**
@@ -49,7 +44,6 @@ public class MusicBandGenerator {
      */
     public MusicBandGenerator(Long id) {
         generatedMusicBand = new MusicBand(id);
-        generatedMusicBand.setCoordinates(coordinates);
     }
 
     /**
@@ -79,10 +73,7 @@ public class MusicBandGenerator {
         generatedMusicBand.setNumberOfParticipants(numberOfParticipants);
     }
 
-    /**
-     * Метод, считывающий координату X с коммандной строки и устанавливающий ее для новой муыкальной группы
-     */
-    private void getXCoordinate() {
+    private void getCoordinates() {
         double x = CommandValidators.validateInput(arg -> ((double) arg) <= Coordinates.MAX_X,
                 "Enter the X coordinate of the group (its value should be no more than " + Coordinates.MAX_X + ")",
                 "Error processing the number, repeat the input",
@@ -90,13 +81,6 @@ public class MusicBandGenerator {
                 Double::parseDouble,
                 false,
                 sc);
-        generatedMusicBand.getCoordinates().setX(x);
-    }
-
-    /**
-     * Метод, считывающий координату Y с коммандной строки и устанавливающий ее для новой муыкальной группы
-     */
-    private void getYCoordinate() {
         Float y = CommandValidators.validateInput(arg -> ((Float) arg) <= Coordinates.MAX_Y,
                 "Enter the Y coordinate of the group (its value should be no more than " + Coordinates.MAX_Y + ")",
                 "Error processing the number, repeat the input",
@@ -104,7 +88,7 @@ public class MusicBandGenerator {
                 Float::parseFloat,
                 false,
                 sc);
-        generatedMusicBand.getCoordinates().setY(y);
+        generatedMusicBand.setCoordinates(new Coordinates(x, y));
     }
 
     /**
@@ -156,8 +140,7 @@ public class MusicBandGenerator {
      */
     public void setVariables() {
         getName();
-        getXCoordinate();
-        getYCoordinate();
+        getCoordinates();
         getNumberOfParticipants();
         getDescription();
         getMusicGenre();

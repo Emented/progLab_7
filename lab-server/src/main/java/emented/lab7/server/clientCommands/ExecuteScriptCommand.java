@@ -7,7 +7,10 @@ import emented.lab7.server.abstractions.AbstractClientCommand;
 public class ExecuteScriptCommand extends AbstractClientCommand {
 
     public ExecuteScriptCommand() {
-        super("execute_script", 1, "read and execute the script from the specified file", "file name");
+        super("execute_script",
+                1,
+                "read and execute the script from the specified file",
+                "file name");
     }
 
     @Override

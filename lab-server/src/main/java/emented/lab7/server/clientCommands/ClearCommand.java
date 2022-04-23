@@ -2,26 +2,22 @@ package emented.lab7.server.clientCommands;
 
 import emented.lab7.common.util.Request;
 import emented.lab7.common.util.Response;
-import emented.lab7.common.util.TextColoring;
 import emented.lab7.server.abstractions.AbstractClientCommand;
-import emented.lab7.server.util.CollectionManager;
+import emented.lab7.server.util.CommandProcessor;
 
 public class ClearCommand extends AbstractClientCommand {
 
-    private final CollectionManager collectionInWork;
+    private final CommandProcessor commandProcessor;
 
-    public ClearCommand(CollectionManager collectionInWork) {
-        super("clear", 0, "clear the collection");
-        this.collectionInWork = collectionInWork;
+    public ClearCommand(CommandProcessor commandProcessor) {
+        super("clear",
+                0,
+                "clear the collection");
+        this.commandProcessor = commandProcessor;
     }
 
     @Override
     public Response executeClientCommand(Request request) {
-        if (collectionInWork.getMusicBands().isEmpty()) {
-            return new Response(TextColoring.getGreenText("Collection is already empty"));
-        } else {
-            collectionInWork.clearCollection();
-            return new Response(TextColoring.getGreenText("The collection has been cleared"));
-        }
+        return commandProcessor.clear(request);
     }
 }

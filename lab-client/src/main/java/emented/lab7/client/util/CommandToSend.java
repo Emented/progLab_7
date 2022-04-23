@@ -2,8 +2,8 @@ package emented.lab7.client.util;
 
 public class CommandToSend {
 
-    private String commandName;
-    private String[] commandArgs;
+    private final String commandName;
+    private final String[] commandArgs;
 
     public CommandToSend(String commandName, String[] commandArgs) {
         this.commandName = commandName;
