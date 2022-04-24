@@ -98,7 +98,7 @@ public class ClientWorker {
     }
 
     private List<String> loginUser() {
-        ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Welcome to the registration tab!"));
+        ClientConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Welcome to the login tab!"));
         String login;
         String password;
         while (true) {

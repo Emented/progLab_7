@@ -64,8 +64,8 @@ public class DBManager {
                     + "(creationDate, name, x, y, numberOfParticipants, description, "
                     + "musicGenre, studioAddress, owner_id) "
                     + "SELECT ?, ?, ?, ?, ?, ?, ?, ?, id "
-                    + "FROM public.s336189users "
-                    + "WHERE public.s336189users.login = ?;";
+                    + "FROM s336189users "
+                    + "WHERE s336189users.login = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(addElementQuery,
                     Statement.RETURN_GENERATED_KEYS);
             Coordinates coordinates = musicBand.getCoordinates();

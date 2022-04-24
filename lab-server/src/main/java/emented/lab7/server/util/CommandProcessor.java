@@ -192,7 +192,7 @@ public class CommandProcessor {
                         if (dbManager.removeById(id, request.getUsername())) {
                             collectionManager.removeBandById(id);
                             return new Response(TextColoring.getGreenText("MusicBand with " + request.getNumericArgument()
-                                    + " participants and ID equals"
+                                    + " participants and ID equals "
                                     + id + " was removed"));
                         }
                     }

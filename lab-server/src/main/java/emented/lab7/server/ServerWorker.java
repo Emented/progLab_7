@@ -19,6 +19,7 @@ import emented.lab7.server.clientCommands.ShowCommand;
 import emented.lab7.server.clientCommands.UpdateCommand;
 import emented.lab7.server.db.DBLocalConnector;
 import emented.lab7.server.db.DBManager;
+import emented.lab7.server.db.DBSSHConnector;
 import emented.lab7.server.interfaces.DBConnectable;
 import emented.lab7.server.serverCommands.ServerExitCommand;
 import emented.lab7.server.serverCommands.ServerHelpCommand;
@@ -40,7 +41,7 @@ public class ServerWorker {
     private final Scanner scanner = new Scanner(System.in);
     private final int maxPort = 65535;
     private final ServerCommandListener serverCommandListener = new ServerCommandListener(scanner);
-    private final DBConnectable dbConnector = new DBLocalConnector();
+    private final DBConnectable dbConnector = new DBSSHConnector();
     private ServerSocketWorker serverSocketWorker;
     private final CollectionManager collectionManager = new CollectionManager();
     private UsersManager usersManager;
