@@ -140,7 +140,10 @@ public class CommandProcessor {
                 if (collectionManager.getMusicBands().isEmpty()) {
                     return new Response(TextColoring.getGreenText("Collection is empty"));
                 } else {
-                    return new Response(TextColoring.getGreenText("Elements of collection:"), collectionManager.getMusicBands());
+                    List<Long> ids = dbManager.getIdsOfUsersElements(request.getUsername());
+                    return new Response(TextColoring.getGreenText("Elements of collection:"),
+                            collectionManager.getUsersElements(ids),
+                            collectionManager.getAlienElements(ids));
                 }
             } else {
                 return new Response(TextColoring.getRedText("Login and password mismatch"));

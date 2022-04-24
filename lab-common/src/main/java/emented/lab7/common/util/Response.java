@@ -11,9 +11,10 @@ import java.util.stream.Collectors;
 
 public class Response implements Serializable {
 
-    private String messageToResponse;
+    private final String messageToResponse;
     private MusicBand bandToResponse;
-    private Set<MusicBand> collectionToResponse;
+    private Set<MusicBand> yourElementsOfCollection;
+    private Set<MusicBand> alienElementsOfCollection;
     private boolean success = true;
     private List<Long> listOfIds;
 
@@ -36,17 +37,10 @@ public class Response implements Serializable {
         this.success = success;
     }
 
-    public Response(String messageToResponse, Set<MusicBand> collectionToResponse) {
+    public Response(String messageToResponse, Set<MusicBand> yourElementsOfCollection, Set<MusicBand> alienElementsOfCollection) {
         this.messageToResponse = messageToResponse;
-        this.collectionToResponse = collectionToResponse;
-    }
-
-    public Response(MusicBand bandToResponse) {
-        this.bandToResponse = bandToResponse;
-    }
-
-    public Response(Set<MusicBand> collectionToResponse) {
-        this.collectionToResponse = collectionToResponse;
+        this.yourElementsOfCollection = yourElementsOfCollection;
+        this.alienElementsOfCollection = alienElementsOfCollection;
     }
 
     public String getMessageToResponse() {
@@ -57,8 +51,12 @@ public class Response implements Serializable {
         return bandToResponse;
     }
 
-    public Set<MusicBand> getCollectionToResponse() {
-        return collectionToResponse;
+    public Set<MusicBand> getYourElementsOfCollection() {
+        return yourElementsOfCollection;
+    }
+
+    public Set<MusicBand> getAlienElementsOfCollection() {
+        return alienElementsOfCollection;
     }
 
     public List<Long> getListOfIds() {
@@ -72,20 +70,33 @@ public class Response implements Serializable {
     public String getInfoAboutResponse() {
         return "Response contains: " + (messageToResponse == null ? "" : "message")
                 + (bandToResponse == null ? "" : ", musicband")
-                + (collectionToResponse == null ? "" : ", collection");
+                + (yourElementsOfCollection == null ? "" : ", collection");
     }
 
     @Override
     public String toString() {
         StringBuilder collection = new StringBuilder();
         StringBuilder ids = new StringBuilder();
-        if (collectionToResponse != null) {
-            List<MusicBand> sortedBands = new ArrayList<>(collectionToResponse);
+        if (yourElementsOfCollection != null) {
+            List<MusicBand> sortedBands = new ArrayList<>(yourElementsOfCollection);
             sortedBands = sortedBands.stream().sorted(Comparator.comparing(SizeAnalyzer::getSizeOfBand).reversed()).collect(Collectors.toList());
+            collection.append(TextColoring.getGreenText("Your elements:\n"));
+            for (MusicBand m : sortedBands) {
+                collection.append(m.toString()).append("\n");
+            }
+        } else {
+            collection.append(TextColoring.getGreenText("You don't have elements in this collection!\n"));
+        }
+        if (alienElementsOfCollection != null) {
+            List<MusicBand> sortedBands = new ArrayList<>(alienElementsOfCollection);
+            sortedBands = sortedBands.stream().sorted(Comparator.comparing(SizeAnalyzer::getSizeOfBand).reversed()).collect(Collectors.toList());
+            collection.append(TextColoring.getGreenText("Another user's elements:\n"));
             for (MusicBand m : sortedBands) {
                 collection.append(m.toString()).append("\n");
             }
             collection = new StringBuilder(collection.substring(0, collection.length() - 1));
+        }  else {
+            collection.append(TextColoring.getGreenText("Another users don't have elements in this collection!"));
         }
         if (listOfIds != null) {
             for (Long id : listOfIds) {
@@ -95,7 +106,7 @@ public class Response implements Serializable {
         }
         return (messageToResponse == null ? "" : messageToResponse)
                 + (bandToResponse == null ? "" : "\n" + bandToResponse)
-                + ((collectionToResponse == null) ? "" : "\n" + collection)
+                + ((yourElementsOfCollection == null && alienElementsOfCollection == null) ? "" : "\n" + collection)
                 + ((listOfIds == null) ? "" : "\n" + ids);
     }
 }

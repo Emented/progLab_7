@@ -2,7 +2,6 @@ package emented.lab7.server.util;
 
 import emented.lab7.common.entities.MusicBand;
 import emented.lab7.common.exceptions.CollectionIsEmptyException;
-import emented.lab7.common.exceptions.IDNotFoundException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -91,17 +91,24 @@ public class CollectionManager {
         musicBands.add(musicBand);
     }
 
-    public void checkId(Long id) throws IDNotFoundException {
-        boolean flag = false;
+    public Set<MusicBand> getUsersElements(List<Long> ids) {
+        Set<MusicBand> result = new HashSet<>();
         for (MusicBand band : musicBands) {
-            if (Objects.equals(band.getId(), id)) {
-                flag = true;
-                break;
+            if (ids.contains(band.getId())) {
+                result.add(band);
             }
         }
-        if (!flag) {
-            throw new IDNotFoundException("There is no group with this ID");
+        return result.isEmpty() ? null : result;
+    }
+
+    public Set<MusicBand> getAlienElements(List<Long> ids) {
+        Set<MusicBand> result = new HashSet<>();
+        for (MusicBand band : musicBands) {
+           if (!ids.contains(band.getId())) {
+               result.add(band);
+           }
         }
+        return result.isEmpty() ? null : result;
     }
 
     public boolean checkMax(MusicBand musicBand) {
@@ -162,13 +169,6 @@ public class CollectionManager {
             }
         }
         return counter;
-    }
-
-    /**
-     * Метод очистки коллекции
-     */
-    public void clearCollection() {
-        musicBands.clear();
     }
 
     /**

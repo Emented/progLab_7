@@ -228,8 +228,8 @@ public class DBManager {
 
     public List<Long> getIdsOfUsersElements(String username) throws DatabaseException {
         return dbConnector.handleQuery((Connection connection) -> {
-            String getIdsQuery = "SELECT id FROM s336189musicbands"
-                    + "WHERE s336189musicbands.owner_id = s336189users AND s336189users.login = ?;";
+            String getIdsQuery = "SELECT s336189musicbands.id FROM s336189musicbands, s336189users "
+                    + "WHERE s336189musicbands.owner_id = s336189users.id AND s336189users.login = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(getIdsQuery);
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
