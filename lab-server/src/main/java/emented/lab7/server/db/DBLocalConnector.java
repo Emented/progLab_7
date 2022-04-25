@@ -79,5 +79,7 @@ public class DBLocalConnector implements DBConnectable {
                 + "studioAddress varchar(100),"
                 + "owner_id bigint NOT NULL REFERENCES public.s336189users (id)"
                 + ");");
+
+        connection.close();
     }
 }

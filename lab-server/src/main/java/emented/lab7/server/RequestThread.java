@@ -4,6 +4,7 @@ import emented.lab7.common.util.Request;
 import emented.lab7.common.util.RequestType;
 import emented.lab7.common.util.Response;
 import emented.lab7.common.util.TextColoring;
+import emented.lab7.server.db.DBSSHConnector;
 import emented.lab7.server.util.CommandManager;
 import emented.lab7.server.util.ServerSocketWorker;
 import emented.lab7.server.util.UsersManager;
@@ -47,6 +48,7 @@ public class RequestThread extends Thread {
         }
         try {
             serverSocketWorker.stopServer();
+            DBSSHConnector.closeSSH();
         } catch (IOException e) {
             ServerConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("An error occurred during stopping the server"));
         }

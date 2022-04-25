@@ -31,6 +31,8 @@ public class DBSSHConnector implements DBConnectable {
     private final int SSH_PORT = 2222;
     private int FORWARDING_PORT;
 
+    private static Session session;
+
     public DBSSHConnector() {
         try {
             this.SV_LOGIN = System.getenv("SV_LOGIN");
@@ -56,11 +58,17 @@ public class DBSSHConnector implements DBConnectable {
 
     }
 
+    public static void closeSSH() {
+        if (session != null) {
+            session.disconnect();
+        }
+    }
+
     private void connectSSH() throws JSchException {
         Properties config = new java.util.Properties();
         config.put("StrictHostKeyChecking", "no");
         JSch jsch = new JSch();
-        Session session = jsch.getSession(SV_LOGIN, SV_ADDR, SSH_PORT);
+        session = jsch.getSession(SV_LOGIN, SV_ADDR, SSH_PORT);
         session.setPassword(SV_PASS);
         session.setConfig(config);
         session.connect();
@@ -118,5 +126,6 @@ public class DBSSHConnector implements DBConnectable {
                 + "studioAddress varchar(100),"
                 + "owner_id bigint NOT NULL REFERENCES s336189users (id)"
                 + ");");
+        connection.close();
     }
 }
