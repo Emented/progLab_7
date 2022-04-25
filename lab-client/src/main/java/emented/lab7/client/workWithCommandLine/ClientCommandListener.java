@@ -13,15 +13,17 @@ import java.util.Scanner;
 public class ClientCommandListener {
 
     private final Scanner sc;
+    private final String username;
 
 
-    public ClientCommandListener(InputStream inputStream) {
+    public ClientCommandListener(InputStream inputStream, String username) {
         sc = new Scanner(inputStream);
+        this.username = username;
     }
 
     public CommandToSend readCommand() {
         try {
-            ClientConfig.getConsoleTextPrinter().printText(TextColoring.getBlueText("Enter a command: "));
+            ClientConfig.getConsoleTextPrinter().printText(TextColoring.getBlueText(username + ": "));
             String[] splitedInput = sc.nextLine().trim().split(" ");
             String commandName = splitedInput[0].toLowerCase(Locale.ROOT);
             String[] commandsArgs = Arrays.copyOfRange(splitedInput, 1, splitedInput.length);

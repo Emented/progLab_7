@@ -19,12 +19,13 @@ public class Session {
 
     private final List<String> userInfo;
     private final ClientSocketWorker clientSocketWorker;
-    private final ClientCommandListener commandListener = new ClientCommandListener(System.in);
+    private final ClientCommandListener commandListener;
     private boolean statusOfCommandListening = true;
 
     public Session(List<String> userInfo, ClientSocketWorker clientSocketWorker) {
         this.userInfo = userInfo;
         this.clientSocketWorker = clientSocketWorker;
+        commandListener = new ClientCommandListener(System.in, userInfo.get(0));
     }
 
     public void startSession() {
