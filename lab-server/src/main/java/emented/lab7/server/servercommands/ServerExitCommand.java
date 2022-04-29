@@ -1,4 +1,4 @@
-package emented.lab7.server.serverCommands;
+package emented.lab7.server.servercommands;
 
 import emented.lab7.common.util.TextColoring;
 import emented.lab7.server.ServerConfig;

@@ -1,4 +1,4 @@
-package emented.lab7.client.workWithCommandLine;
+package emented.lab7.client.workwithcommandline;
 
 import emented.lab7.client.util.CommandValidators;
 import emented.lab7.common.entities.Coordinates;

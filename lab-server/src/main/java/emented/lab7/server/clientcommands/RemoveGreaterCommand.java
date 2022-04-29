@@ -1,22 +1,23 @@
-package emented.lab7.server.clientCommands;
+package emented.lab7.server.clientcommands;
 
 import emented.lab7.common.util.Request;
 import emented.lab7.common.util.Response;
 import emented.lab7.server.abstractions.AbstractClientCommand;
 import emented.lab7.server.util.CommandProcessor;
 
-public class InfoCommand extends AbstractClientCommand {
+public class RemoveGreaterCommand extends AbstractClientCommand {
 
     private final CommandProcessor commandProcessor;
-    public InfoCommand(CommandProcessor commandProcessor) {
-        super("info",
+
+    public RemoveGreaterCommand(CommandProcessor commandProcessor) {
+        super("remove_greater",
                 0,
-                "display information about the collection");
+                "remove all items from the collection that exceed the specified");
         this.commandProcessor = commandProcessor;
     }
 
     @Override
     public Response executeClientCommand(Request request) {
-        return commandProcessor.info(request);
+        return commandProcessor.removeGreater(request);
     }
 }

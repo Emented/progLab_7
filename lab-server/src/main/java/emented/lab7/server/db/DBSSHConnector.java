@@ -126,6 +126,7 @@ public class DBSSHConnector implements DBConnectable {
                 + "studioAddress varchar(100),"
                 + "owner_id bigint NOT NULL REFERENCES s336189users (id)"
                 + ");");
+
         connection.close();
     }
 }

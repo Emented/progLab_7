@@ -41,11 +41,6 @@ public class AspectsForLogging {
         }
     }
 
-    @AfterReturning(pointcut = "execution(* readFromXML(..))", returning = "res")
-    public void xmlExceptionAdvise(Object res) {
-        LOGGER.info("Successfully transfered data from file to collection\n" + ((CollectionManager) res).show());
-    }
-
     @AfterReturning(pointcut = "execution(* listenForRequest())", returning = "res")
     public void listenForRequestAdvise(Object res) {
         if (res != null) {

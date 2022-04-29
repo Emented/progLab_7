@@ -1,4 +1,4 @@
-package emented.lab7.client.workWithCommandLine;
+package emented.lab7.client.workwithcommandline;
 
 import emented.lab7.client.ClientConfig;
 import emented.lab7.client.util.CommandToSend;

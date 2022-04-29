@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class StringEncryptor {
+public final class StringEncryptor {
 
     private static final int RADIX = 16;
     private static final int MIN_LENGTH = 32;
@@ -26,5 +26,4 @@ public class StringEncryptor {
             throw new RuntimeException(e);
         }
     }
-
 }

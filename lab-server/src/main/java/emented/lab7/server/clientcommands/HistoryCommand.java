@@ -1,4 +1,4 @@
-package emented.lab7.server.clientCommands;
+package emented.lab7.server.clientcommands;
 
 
 import emented.lab7.common.util.Request;

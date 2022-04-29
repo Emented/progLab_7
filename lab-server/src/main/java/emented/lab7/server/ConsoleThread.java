@@ -3,7 +3,7 @@ package emented.lab7.server;
 import emented.lab7.server.util.CommandManager;
 import emented.lab7.server.util.ServerCommandListener;
 
-public class ConsoleThread extends Thread {
+public class ConsoleThread implements Runnable {
 
     private final ServerCommandListener serverCommandListener;
     private final CommandManager commandManager;

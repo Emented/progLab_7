@@ -1,7 +1,7 @@
 package emented.lab7.client.util;
 
 import emented.lab7.client.ClientConfig;
-import emented.lab7.client.workWithCommandLine.ClientCommandListener;
+import emented.lab7.client.workwithcommandline.ClientCommandListener;
 import emented.lab7.common.exceptions.WrongAmountOfArgsException;
 import emented.lab7.common.util.Request;
 import emented.lab7.common.util.Response;

@@ -1,7 +1,7 @@
 package emented.lab7.client.util;
 
 import emented.lab7.client.ClientConfig;
-import emented.lab7.client.workWithCommandLine.MusicBandGenerator;
+import emented.lab7.client.workwithcommandline.MusicBandGenerator;
 import emented.lab7.common.exceptions.WrongAmountOfArgsException;
 import emented.lab7.common.exceptions.WrongArgException;
 import emented.lab7.common.util.Request;

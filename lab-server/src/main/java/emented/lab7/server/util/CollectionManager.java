@@ -182,21 +182,5 @@ public class CollectionManager {
                 + MusicBand.class.toString().substring(size) + ", date of initialization: " + dateOfInitialization
                 + ", number of elements: " + musicBands.size();
     }
-
-    /**
-     * Вывести все элементы коллекции в их строковом представлении
-     */
-    public String show() {
-        if (musicBands.isEmpty()) {
-            return "Collection is empty";
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (MusicBand band : musicBands) {
-                sb.append(band).append("\n");
-            }
-            sb = new StringBuilder(sb.substring(0, sb.length() - 2));
-            return sb.toString();
-        }
-    }
 }
 

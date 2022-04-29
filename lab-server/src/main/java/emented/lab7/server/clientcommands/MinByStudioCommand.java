@@ -1,23 +1,23 @@
-package emented.lab7.server.clientCommands;
+package emented.lab7.server.clientcommands;
 
 import emented.lab7.common.util.Request;
 import emented.lab7.common.util.Response;
 import emented.lab7.server.abstractions.AbstractClientCommand;
 import emented.lab7.server.util.CommandProcessor;
 
-public class AddIfMaxCommand extends AbstractClientCommand {
+public class MinByStudioCommand extends AbstractClientCommand {
 
     private final CommandProcessor commandProcessor;
 
-    public AddIfMaxCommand(CommandProcessor commandProcessor) {
-        super("add_if_max",
+    public MinByStudioCommand(CommandProcessor commandProcessor) {
+        super("min_by_studio",
                 0,
-                "add a new item to the collection if its value exceeds the value of the largest item in this collection");
+                "output any object from the collection whose studio field value is minimal");
         this.commandProcessor = commandProcessor;
     }
 
     @Override
     public Response executeClientCommand(Request request) {
-        return commandProcessor.addIfMax(request);
+        return commandProcessor.minByStudio(request);
     }
 }
