@@ -1,7 +1,5 @@
 package emented.lab7.server;
 
-import java.sql.SQLException;
-
 public final class Server {
 
     private Server() {
