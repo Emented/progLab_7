@@ -7,6 +7,7 @@ public final class Server {
     }
 
     public static void main(String[] args) {
-
+        ServerWorker serverWorker = new ServerWorker();
+        serverWorker.startServerWorker();
     }
 }
