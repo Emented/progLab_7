@@ -1,11 +1,8 @@
 package emented.lab7.server.util;
 
 import emented.lab7.common.util.DeSerializer;
-import emented.lab7.common.util.Request;
 import emented.lab7.common.util.Response;
 import emented.lab7.common.util.Serializer;
-import emented.lab7.common.util.TextColoring;
-import emented.lab7.server.ServerConfig;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,7 +14,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class ServerSocketWorker {
 
@@ -25,7 +21,6 @@ public class ServerSocketWorker {
     private final int selectorDelay = 100;
     private Selector selector;
     private DatagramChannel datagramChannel;
-    private SocketAddress socketAddress;
     private int port = defaultPort;
 
     public ServerSocketWorker(int aPort) throws IOException {
@@ -53,7 +48,7 @@ public class ServerSocketWorker {
         datagramChannel.close();
     }
 
-    public Request listenForRequest() throws IOException, ClassNotFoundException {
+    public RequestWithAddress listenForRequest() throws IOException, ClassNotFoundException {
             if (selector.select(selectorDelay) == 0) {
                 return null;
             }
@@ -65,18 +60,18 @@ public class ServerSocketWorker {
                 if (key.isReadable()) {
                     int arraySize = datagramChannel.socket().getReceiveBufferSize();
                     ByteBuffer packet = ByteBuffer.allocate(arraySize);
-                    socketAddress = datagramChannel.receive(packet);
+                    SocketAddress address = datagramChannel.receive(packet);
                     ((Buffer) packet).flip();
                     byte[] bytes = new byte[packet.remaining()];
                     packet.get(bytes);
-                    return DeSerializer.deSerializeRequest(bytes);
+                    return new RequestWithAddress(DeSerializer.deSerializeRequest(bytes), address);
                 }
             }
             return null;
     }
 
-    public void sendResponse(Response response) throws IOException {
+    public void sendResponse(Response response, SocketAddress address) throws IOException {
         ByteBuffer bufferToSend = Serializer.serializeResponse(response);
-        datagramChannel.send(bufferToSend, socketAddress);
+        datagramChannel.send(bufferToSend, address);
     }
 }

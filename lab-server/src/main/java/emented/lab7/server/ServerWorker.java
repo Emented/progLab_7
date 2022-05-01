@@ -40,46 +40,56 @@ public class ServerWorker {
     private final Scanner scanner = new Scanner(System.in);
     private final int maxPort = 65535;
     private final ServerCommandListener serverCommandListener = new ServerCommandListener(scanner);
-    private final DBConnectable dbConnector = new DBSSHConnector();
+    private final DBConnectable dbConnector;
+    private final CollectionManager collectionManager;
+    private final UsersManager usersManager;
+    private final DBManager dbManager;
+    private final CommandProcessor commandProcessor;
+    private final CommandManager commandManager;
     private ServerSocketWorker serverSocketWorker;
-    private final CollectionManager collectionManager = new CollectionManager();
-    private UsersManager usersManager;
-    private DBManager dbManager;
-    private CommandProcessor commandProcessor;
-    private CommandManager commandManager;
+
+    {
+        dbConnector = new DBSSHConnector();
+        collectionManager = new CollectionManager();
+        dbManager = new DBManager(dbConnector);
+        usersManager = new UsersManager(dbManager);
+        commandProcessor = new CommandProcessor(dbManager, collectionManager);
+        commandManager = new CommandManager(
+                new HelpCommand(ServerConfig.getClientAvailableCommands(), commandProcessor),
+                new InfoCommand(commandProcessor),
+                new ShowCommand(commandProcessor),
+                new AddCommand(commandProcessor),
+                new UpdateCommand(commandProcessor),
+                new RemoveByIdCommand(commandProcessor),
+                new ClearCommand(commandProcessor),
+                new ExitCommand(),
+                new AddIfMaxCommand(commandProcessor),
+                new RemoveGreaterCommand(commandProcessor),
+                new HistoryCommand(ServerConfig.getClientCommandHistory().getHistory(), commandProcessor),
+                new RemoveAnyByNumberOfParticipantsCommand(commandProcessor),
+                new MinByStudioCommand(commandProcessor),
+                new CountLessThatNumberOfParticipantsCommand(commandProcessor),
+                new ExecuteScriptCommand(),
+                new ServerHelpCommand(ServerConfig.getServerAvailableCommands()),
+                new ServerExitCommand(),
+                new ServerHistoryCommand(ServerConfig.getClientCommandHistory().getHistory()));
+        try {
+            collectionManager.setMusicBands(dbManager.loadCollection());
+        } catch (DatabaseException e) {
+            ServerConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText(e.getMessage()));
+            System.exit(1);
+        }
+    }
 
     public void startServerWorker() {
         try {
-            dbManager = new DBManager(dbConnector);
-            usersManager = new UsersManager(dbManager);
-            commandProcessor = new CommandProcessor(dbManager, collectionManager);
-            collectionManager.setMusicBands(dbManager.loadCollection());
-            commandManager = new CommandManager(
-                    new HelpCommand(ServerConfig.getClientAvailableCommands(), commandProcessor),
-                    new InfoCommand(commandProcessor),
-                    new ShowCommand(commandProcessor),
-                    new AddCommand(commandProcessor),
-                    new UpdateCommand(commandProcessor),
-                    new RemoveByIdCommand(commandProcessor),
-                    new ClearCommand(commandProcessor),
-                    new ExitCommand(),
-                    new AddIfMaxCommand(commandProcessor),
-                    new RemoveGreaterCommand(commandProcessor),
-                    new HistoryCommand(ServerConfig.getClientCommandHistory().getHistory(), commandProcessor),
-                    new RemoveAnyByNumberOfParticipantsCommand(commandProcessor),
-                    new MinByStudioCommand(commandProcessor),
-                    new CountLessThatNumberOfParticipantsCommand(commandProcessor),
-                    new ExecuteScriptCommand(),
-                    new ServerHelpCommand(ServerConfig.getServerAvailableCommands()),
-                    new ServerExitCommand(),
-                    new ServerHistoryCommand(ServerConfig.getClientCommandHistory().getHistory()));
             inputPort();
             ServerConfig.getConsoleTextPrinter().printlnText(TextColoring.getGreenText("Welcome to the server! To see the list of commands input HELP"));
             Thread requestThread = new Thread(new RequestThread(serverSocketWorker, commandManager, usersManager));
             Thread consoleThread = new Thread(new ConsoleThread(serverCommandListener, commandManager));
             requestThread.start();
             consoleThread.start();
-        } catch (IOException | DatabaseException e) {
+        } catch (IOException e) {
             ServerConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText(e.getMessage()));
             System.exit(1);
         }

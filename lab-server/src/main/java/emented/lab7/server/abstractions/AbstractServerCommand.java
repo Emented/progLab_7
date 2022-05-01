@@ -14,10 +14,6 @@ public abstract class AbstractServerCommand {
         return name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     public abstract String executeServerCommand();
 
     @Override

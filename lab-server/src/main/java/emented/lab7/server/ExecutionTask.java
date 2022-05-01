@@ -10,9 +10,9 @@ import java.util.concurrent.Callable;
 
 public class ExecutionTask implements Callable<Response> {
 
-    private Request request;
-    private CommandManager commandManager;
-    private UsersManager usersManager;
+    private final Request request;
+    private final CommandManager commandManager;
+    private final UsersManager usersManager;
 
     public ExecutionTask(Request request, CommandManager commandManager, UsersManager usersManager) {
         this.request = request;

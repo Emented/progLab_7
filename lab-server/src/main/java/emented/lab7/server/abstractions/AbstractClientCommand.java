@@ -30,18 +30,6 @@ public abstract class AbstractClientCommand {
         return name;
     }
 
-    public int getAmountOfArgs() {
-        return amountOfArgs;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getDescriptionOfArgs() {
-        return descriptionOfArgs;
-    }
-
     @Override
     public String toString() {
         return "Name of command: " + name + ", " + "args: "

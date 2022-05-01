@@ -1,8 +1,6 @@
 package emented.lab7.common.entities;
 
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
