@@ -6,29 +6,55 @@ import emented.lab7.common.util.TextColoring;
 import emented.lab7.server.ServerConfig;
 import emented.lab7.server.abstractions.AbstractClientCommand;
 import emented.lab7.server.abstractions.AbstractServerCommand;
+import emented.lab7.server.clientcommands.AddCommand;
+import emented.lab7.server.clientcommands.AddIfMaxCommand;
+import emented.lab7.server.clientcommands.ClearCommand;
+import emented.lab7.server.clientcommands.CountLessThatNumberOfParticipantsCommand;
+import emented.lab7.server.clientcommands.ExecuteScriptCommand;
+import emented.lab7.server.clientcommands.ExitCommand;
+import emented.lab7.server.clientcommands.HelpCommand;
+import emented.lab7.server.clientcommands.HistoryCommand;
+import emented.lab7.server.clientcommands.InfoCommand;
+import emented.lab7.server.clientcommands.MinByStudioCommand;
+import emented.lab7.server.clientcommands.RemoveAnyByNumberOfParticipantsCommand;
+import emented.lab7.server.clientcommands.RemoveByIdCommand;
+import emented.lab7.server.clientcommands.RemoveGreaterCommand;
+import emented.lab7.server.clientcommands.ShowCommand;
+import emented.lab7.server.clientcommands.UpdateCommand;
+import emented.lab7.server.servercommands.ServerExitCommand;
+import emented.lab7.server.servercommands.ServerHelpCommand;
+import emented.lab7.server.servercommands.ServerHistoryCommand;
 
 import java.time.format.DateTimeFormatter;
 
 public class CommandManager {
 
-    public CommandManager(AbstractClientCommand helpClientCommand,
-                          AbstractClientCommand infoCommand,
-                          AbstractClientCommand showCommand,
-                          AbstractClientCommand addCommand,
-                          AbstractClientCommand updateCommand,
-                          AbstractClientCommand removeByIdCommand,
-                          AbstractClientCommand clearCommand,
-                          AbstractClientCommand exitClientCommand,
-                          AbstractClientCommand addIfMaxCommand,
-                          AbstractClientCommand removeGreaterCommand,
-                          AbstractClientCommand historyCommand,
-                          AbstractClientCommand removeAnyByNumberOfParticipantsCommand,
-                          AbstractClientCommand minByStudioCommand,
-                          AbstractClientCommand countLessThanNumberOfParticipantsCommand,
-                          AbstractClientCommand executeScriptCommand,
-                          AbstractServerCommand helpServerCommand,
-                          AbstractServerCommand exitServerCommand,
-                          AbstractServerCommand historyServerCommand) {
+    private final CommandProcessor commandProcessor;
+
+    public CommandManager(CommandProcessor commandProcessor) {
+        this.commandProcessor = commandProcessor;
+        setCommands();
+    }
+
+    private void setCommands() {
+        AbstractClientCommand helpClientCommand = new HelpCommand(ServerConfig.getClientAvailableCommands(), commandProcessor);
+        AbstractClientCommand infoCommand = new  InfoCommand(commandProcessor);
+        AbstractClientCommand showCommand = new ShowCommand(commandProcessor);
+        AbstractClientCommand addCommand = new AddCommand(commandProcessor);
+        AbstractClientCommand updateCommand = new UpdateCommand(commandProcessor);
+        AbstractClientCommand removeByIdCommand = new RemoveByIdCommand(commandProcessor);
+        AbstractClientCommand clearCommand = new ClearCommand(commandProcessor);
+        AbstractClientCommand exitClientCommand = new ExitCommand();
+        AbstractClientCommand addIfMaxCommand = new AddIfMaxCommand(commandProcessor);
+        AbstractClientCommand removeGreaterCommand = new RemoveGreaterCommand(commandProcessor);
+        AbstractClientCommand historyCommand = new HistoryCommand(ServerConfig.getClientCommandHistory().getHistory(), commandProcessor);
+        AbstractClientCommand removeAnyByNumberOfParticipantsCommand = new RemoveAnyByNumberOfParticipantsCommand(commandProcessor);
+        AbstractClientCommand minByStudioCommand = new MinByStudioCommand(commandProcessor);
+        AbstractClientCommand countLessThanNumberOfParticipantsCommand = new CountLessThatNumberOfParticipantsCommand(commandProcessor);
+        AbstractClientCommand executeScriptCommand = new ExecuteScriptCommand();
+        AbstractServerCommand helpServerCommand = new ServerHelpCommand(ServerConfig.getServerAvailableCommands());
+        AbstractServerCommand exitServerCommand = new ServerExitCommand();
+        AbstractServerCommand historyServerCommand = new ServerHistoryCommand(ServerConfig.getClientCommandHistory().getHistory());
 
         ServerConfig.getClientAvailableCommands().put(helpClientCommand.getName(), helpClientCommand);
         ServerConfig.getClientAvailableCommands().put(infoCommand.getName(), infoCommand);

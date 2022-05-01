@@ -17,6 +17,7 @@ import emented.lab7.server.clientcommands.RemoveByIdCommand;
 import emented.lab7.server.clientcommands.RemoveGreaterCommand;
 import emented.lab7.server.clientcommands.ShowCommand;
 import emented.lab7.server.clientcommands.UpdateCommand;
+import emented.lab7.server.db.DBLocalConnector;
 import emented.lab7.server.db.DBManager;
 import emented.lab7.server.db.DBSSHConnector;
 import emented.lab7.server.interfaces.DBConnectable;
@@ -54,25 +55,7 @@ public class ServerWorker {
         dbManager = new DBManager(dbConnector);
         usersManager = new UsersManager(dbManager);
         commandProcessor = new CommandProcessor(dbManager, collectionManager);
-        commandManager = new CommandManager(
-                new HelpCommand(ServerConfig.getClientAvailableCommands(), commandProcessor),
-                new InfoCommand(commandProcessor),
-                new ShowCommand(commandProcessor),
-                new AddCommand(commandProcessor),
-                new UpdateCommand(commandProcessor),
-                new RemoveByIdCommand(commandProcessor),
-                new ClearCommand(commandProcessor),
-                new ExitCommand(),
-                new AddIfMaxCommand(commandProcessor),
-                new RemoveGreaterCommand(commandProcessor),
-                new HistoryCommand(ServerConfig.getClientCommandHistory().getHistory(), commandProcessor),
-                new RemoveAnyByNumberOfParticipantsCommand(commandProcessor),
-                new MinByStudioCommand(commandProcessor),
-                new CountLessThatNumberOfParticipantsCommand(commandProcessor),
-                new ExecuteScriptCommand(),
-                new ServerHelpCommand(ServerConfig.getServerAvailableCommands()),
-                new ServerExitCommand(),
-                new ServerHistoryCommand(ServerConfig.getClientCommandHistory().getHistory()));
+        commandManager = new CommandManager(commandProcessor);
         try {
             collectionManager.setMusicBands(dbManager.loadCollection());
         } catch (DatabaseException e) {
