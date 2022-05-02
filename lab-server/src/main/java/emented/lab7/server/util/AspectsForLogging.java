@@ -42,9 +42,9 @@ public class AspectsForLogging {
     }
 
     @AfterReturning(pointcut = "execution(* listenForRequest())", returning = "res")
-    public void listenForRequestAdvise(Object res) {
+    public void listenForRequestAdvise(RequestWithAddress res) {
         if (res != null) {
-            LOGGER.info("Accepted request: " + res);
+            LOGGER.info("Accepted request: " + res.getRequest().toString());
         }
     }
 
@@ -66,6 +66,21 @@ public class AspectsForLogging {
     @After("execution(* emented.lab7.server.util.CommandManager.executeClientCommand(..))")
     public void executeClientCommandAdvise(JoinPoint joinPoint) {
         LOGGER.info("Executing client command: " + ((Request) joinPoint.getArgs()[0]).getCommandName());
+    }
+
+    @After("execution(* emented.lab7.server.db.DBManager.*(..))")
+    public void DBQueryAdvice(JoinPoint joinPoint) {
+        LOGGER.info("Executing DB query: " + joinPoint.getSignature().getName());
+    }
+
+    @After("execution(void connectSSH())")
+    public void SSHAdvise() {
+        LOGGER.info("Successfully started SSH session!");
+    }
+
+    @After("execution(void initializeDB())")
+    public void initializeAdvise() {
+        LOGGER.info("Successfully initialized DB!");
     }
 
     @AfterThrowing(pointcut = "execution(* *(..))", throwing = "ex")
