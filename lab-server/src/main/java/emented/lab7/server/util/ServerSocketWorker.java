@@ -22,7 +22,6 @@ public class ServerSocketWorker implements SocketWorkerInterface {
     private final int selectorDelay = 100;
     private Selector selector;
     private DatagramChannel datagramChannel;
-    private int port = defaultPort;
 
     public ServerSocketWorker(int aPort) throws IOException {
         initialization(aPort);
