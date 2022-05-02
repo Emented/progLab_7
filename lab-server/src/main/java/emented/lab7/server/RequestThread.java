@@ -3,6 +3,7 @@ package emented.lab7.server;
 import emented.lab7.common.util.RequestType;
 import emented.lab7.common.util.TextColoring;
 import emented.lab7.server.db.DBSSHConnector;
+import emented.lab7.server.interfaces.SocketWorkerInterface;
 import emented.lab7.server.util.CommandManager;
 import emented.lab7.server.util.RequestWithAddress;
 import emented.lab7.server.util.ServerSocketWorker;
@@ -19,14 +20,14 @@ import java.util.concurrent.Future;
 
 public class RequestThread implements Runnable {
 
-    private final ServerSocketWorker serverSocketWorker;
+    private final SocketWorkerInterface serverSocketWorker;
     private final CommandManager commandManager;
     private final UsersManager usersManager;
     private final ExecutorService fixedService = Executors.newFixedThreadPool(5);
     private final ExecutorService cachedService = Executors.newCachedThreadPool();
     private final ForkJoinPool forkJoinPool = new ForkJoinPool(4);
 
-    public RequestThread(ServerSocketWorker serverSocketWorker, CommandManager commandManager, UsersManager usersManager) {
+    public RequestThread(SocketWorkerInterface serverSocketWorker, CommandManager commandManager, UsersManager usersManager) {
         this.serverSocketWorker = serverSocketWorker;
         this.commandManager = commandManager;
         this.usersManager = usersManager;
@@ -65,7 +66,7 @@ public class RequestThread implements Runnable {
             }
         }
         try {
-            serverSocketWorker.stopServer();
+            serverSocketWorker.stopSocketWorker();
             DBSSHConnector.closeSSH();
             fixedService.shutdown();
             cachedService.shutdown();

@@ -5,6 +5,7 @@ import emented.lab7.common.util.TextColoring;
 import emented.lab7.server.db.DBManager;
 import emented.lab7.server.db.DBSSHConnector;
 import emented.lab7.server.interfaces.DBConnectable;
+import emented.lab7.server.interfaces.SocketWorkerInterface;
 import emented.lab7.server.util.CollectionManager;
 import emented.lab7.server.util.CommandManager;
 import emented.lab7.server.util.CommandProcessor;
@@ -28,7 +29,7 @@ public class ServerWorker {
     private final DBManager dbManager;
     private final CommandProcessor commandProcessor;
     private final CommandManager commandManager;
-    private ServerSocketWorker serverSocketWorker;
+    private SocketWorkerInterface serverSocketWorker;
 
     {
         dbConnector = new DBSSHConnector();
