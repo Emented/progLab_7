@@ -94,14 +94,16 @@ public class Request implements Serializable {
         return requestType;
     }
 
-    public void setRequestType(RequestType requestType) {
-        this.requestType = requestType;
-    }
-
     @Override
     public String toString() {
-        return "Name of command to send: " + commandName
-                + (bandArgument == null ? "" : "\nInfo about band to send: " + bandArgument)
-                + (numericArgument == null ? "" : "\nNumeric argument to send: " + numericArgument);
+        if (requestType.equals(RequestType.REGISTER)) {
+            return "Register request";
+        } else if (requestType.equals(RequestType.LOGIN)) {
+            return "Login request";
+        } else {
+            return "Name of command to send: " + commandName
+                    + (bandArgument == null ? "" : "\nInfo about band to send: " + bandArgument)
+                    + (numericArgument == null ? "" : "\nNumeric argument to send: " + numericArgument);
+        }
     }
 }

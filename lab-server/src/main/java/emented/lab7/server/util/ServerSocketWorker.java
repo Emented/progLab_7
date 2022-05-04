@@ -3,6 +3,7 @@ package emented.lab7.server.util;
 import emented.lab7.common.util.DeSerializer;
 import emented.lab7.common.util.Response;
 import emented.lab7.common.util.Serializer;
+import emented.lab7.server.interfaces.SocketWorkerInterface;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,13 +16,12 @@ import java.nio.channels.Selector;
 import java.util.Iterator;
 import java.util.Set;
 
-public class ServerSocketWorker {
+public class ServerSocketWorker implements SocketWorkerInterface {
 
     private final int defaultPort = 228;
     private final int selectorDelay = 100;
     private Selector selector;
     private DatagramChannel datagramChannel;
-    private int port = defaultPort;
 
     public ServerSocketWorker(int aPort) throws IOException {
         initialization(aPort);
@@ -39,11 +39,7 @@ public class ServerSocketWorker {
         datagramChannel.register(selector, SelectionKey.OP_READ);
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public void stopServer() throws IOException {
+    public void stopSocketWorker() throws IOException {
         selector.close();
         datagramChannel.close();
     }
