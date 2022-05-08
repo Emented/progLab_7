@@ -41,11 +41,7 @@ public class DBSSHConnector implements DBConnectable {
             this.svAddr = System.getenv("SV_ADDR");
             this.forwardingPort = Integer.parseInt(System.getenv("FORWARDING_PORT"));
             connectSSH();
-            Class.forName("org.postgresql.Driver");
             initializeDB();
-        } catch (ClassNotFoundException e) {
-            ServerConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("No DB driver!"));
-            System.exit(1);
         } catch (SQLException e) {
             ServerConfig.getConsoleTextPrinter().printlnText(TextColoring.getRedText("Error occurred during initializing tables!" + e.getMessage()));
             System.exit(1);

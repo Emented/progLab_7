@@ -14,7 +14,7 @@ public class Request implements Serializable {
     private MusicBand bandArgument;
     private String username;
     private String password;
-    private RequestType requestType;
+    private final RequestType requestType;
 
     public Request(String username, String password, RequestType requestType) {
         this.username = username;
